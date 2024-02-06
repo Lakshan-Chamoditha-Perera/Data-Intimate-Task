@@ -94,7 +94,24 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
 }
 
 export const updateUser = async (req: express.Request, res: express.Response) => {
-    res.json(new StandardResponse(200, "User updated successfully", null));
+    const userDto: UserDto = req.body;
+
+    try {
+        const user = await UserModel.findOne({ where: { email: userDto.email } });
+        if (user) {
+            user.name = userDto.name;
+            user.password = userDto.password;
+            user.mobile = userDto.mobile;
+            user.email = userDto.email;
+            await user.save();
+            res.json(new StandardResponse(200, "User updated successfully", null));
+        } else {
+            res.json(new StandardResponse(404, "User not found", null));
+        }
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.json(new StandardResponse(500, "Something went wrong", null));
+    }
 }
 
 export const get = async (req: express.Request, res: express.Response) => {
