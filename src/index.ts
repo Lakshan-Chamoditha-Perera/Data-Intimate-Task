@@ -14,7 +14,7 @@ app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
     sequelize.sync().then(() => {
         console.log("Database is connected");
-        // UserModel.create({ name: "Chandler Bing", email: "cb@gmail.com" })
     });
 });
 
+app.use("/user", require("./routes/user.route"));
