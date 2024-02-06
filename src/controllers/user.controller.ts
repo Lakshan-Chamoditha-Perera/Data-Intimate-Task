@@ -93,7 +93,6 @@ export const deleteUser = async (req: express.Request, res: express.Response) =>
     }
 }
 
-
 export const updateUser = async (req: express.Request, res: express.Response) => {
     res.json(new StandardResponse(200, "User updated successfully", null));
 }
@@ -101,8 +100,6 @@ export const updateUser = async (req: express.Request, res: express.Response) =>
 export const get = async (req: express.Request, res: express.Response) => {
     res.json(new StandardResponse(200, "User retrieved successfully", null));
 }
-
-
 
 export const signup = async (req: express.Request, res: express.Response) => {
     try {
@@ -129,5 +126,16 @@ export const signup = async (req: express.Request, res: express.Response) => {
     }
 };
 
-
-
+export const getUsersList = async (req: express.Request, res: express.Response) => {
+    try {
+        const users = await UserModel.findAll();
+        return res
+            .status(200)
+            .send(new StandardResponse(200, "Users retrieved successfully", users));
+    } catch (error) {
+        console.error(error);
+        return res
+            .status(500)
+            .send(new StandardResponse(500, "Something went wrong!", null));
+    }
+}

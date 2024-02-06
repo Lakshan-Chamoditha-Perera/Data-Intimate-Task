@@ -11,6 +11,8 @@ router.post('/signin', UserController.signin);
 
 router.get('/view', verityToken, UserController.viewUser);
 router.delete('/delete', verityToken, UserController.deleteUser);
+router.get('/getAll', UserController.getUsersList);
+
 router.patch('/update', UserController.updateUser);
 
 export default router;
