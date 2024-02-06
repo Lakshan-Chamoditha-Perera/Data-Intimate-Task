@@ -1,6 +1,7 @@
 import express from "express";
-import StandardResponse from "../response/StandardResponse";
+import StandardResponse from "../util/response/StandardResponse";
 import UserDto from "dto/user.dto";
+import jwt, { Secret } from "jsonwebtoken";
 
 const UserModel = require("../model/User");
 
@@ -15,10 +16,44 @@ const existsByEmail = async (email: string): Promise<boolean> => {
 }
 
 
-export const saveUser = async (req: express.Request, res: express.Response) => {
-    // console.log(req.body);
-    res.json(new StandardResponse(200, "User saved successfully", null));
-}
+export const signin = async (req: express.Request, res: express.Response) => {
+    async function generateToken() {
+        return jwt.sign(
+            { email: req.body.email },
+            process.env.JWT_SECRET as Secret,
+            { expiresIn: "2w" }
+        );
+    }
+
+    try {
+        let login_req = req.body;
+        let user = await UserModel.findOne({ where: { email: login_req.email } });
+
+        if (user) {
+            console.log("user found");
+            if (user.password == login_req.password) {
+                console.log("user logged in successfully");
+                let token = await generateToken();
+                res.send(
+                    new StandardResponse(200, "User logged in successfully", {
+                        email: user.email,
+                        token: token
+                    })
+                );
+            } else {
+                console.log("Invalid credentials");
+                res.send(new StandardResponse(401, "Invalid credentials", null));
+            }
+        } else {
+            res.send(new StandardResponse(404, "User not found", null));
+        }
+    } catch (err) {
+        console.log(err);
+        res
+            .status(500)
+            .send(new StandardResponse(500, "Something went wrong", null));
+    }
+};
 
 export const viewUser = async (req: express.Request, res: express.Response) => {
     res.json(new StandardResponse(200, "User viewed successfully", null));
