@@ -10,7 +10,7 @@ router.post('/signup', UserController.signup);
 router.post('/signin', UserController.signin);
 
 router.get('/view', verityToken, UserController.viewUser);
-router.delete('/delete', UserController.deleteUser);
+router.delete('/delete', verityToken, UserController.deleteUser);
 router.patch('/update', UserController.updateUser);
 
 export default router;

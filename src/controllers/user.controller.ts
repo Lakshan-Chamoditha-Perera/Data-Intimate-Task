@@ -73,8 +73,26 @@ export const viewUser = async (req: express.Request, res: express.Response) => {
 }
 
 export const deleteUser = async (req: express.Request, res: express.Response) => {
-    res.json(new StandardResponse(200, "User deleted successfully", null));
+    const userdto: UserDto = req.body;
+    try {
+        const exists = await existsByEmail(userdto.email);
+        if (exists) {
+            const user = await UserModel.findOne({ where: { email: userdto.email } });
+            if (user) {
+                await user.destroy();
+                res.json(new StandardResponse(200, "User deleted successfully", null));
+            } else {
+                res.json(new StandardResponse(404, "User not found", null));
+            }
+        } else {
+            res.json(new StandardResponse(404, "User not found", null));
+        }
+    } catch (error) {
+        console.log("Error deleting user", error);
+        res.json(new StandardResponse(500, "Something went wrong", null));
+    }
 }
+
 
 export const updateUser = async (req: express.Request, res: express.Response) => {
     res.json(new StandardResponse(200, "User updated successfully", null));
