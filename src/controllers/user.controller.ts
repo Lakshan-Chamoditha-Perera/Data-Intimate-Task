@@ -56,7 +56,20 @@ export const signin = async (req: express.Request, res: express.Response) => {
 };
 
 export const viewUser = async (req: express.Request, res: express.Response) => {
-    res.json(new StandardResponse(200, "User viewed successfully", null));
+    const userdto: UserDto = req.body;
+    try {
+        const exists = await existsByEmail(userdto.email);
+        if (exists) {
+            UserModel.findOne({ where: { email: userdto.email } }).then((user: any) => {
+                res.json(new StandardResponse(200, "User retrieved successfully", user));
+            })
+        }
+        else {
+            res.json(new StandardResponse(404, "User not found", null));
+        }
+    } catch {
+        res.json(new StandardResponse(500, "Something went wrong", null));
+    }
 }
 
 export const deleteUser = async (req: express.Request, res: express.Response) => {
